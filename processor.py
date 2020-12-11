@@ -18,6 +18,7 @@ class IllegalData(Exception):
 
 
 class Matrix:
+    supported_data = [int, float]
 
     def __init__(self, x: int = 0, y: int = 0, generate_matrix=False):
         if x and y:
@@ -60,11 +61,25 @@ class Matrix:
     def __str__(self):
         return "\n".join([" ".join([str(self.__matrix__[x][y]) for y in range(self.y)]) for x in range(self.x)])
 
+    def __mul__(self, y):
+        if isinstance(y, Matrix):
+            pass
+        elif type(y) in self.supported_data:
+            matR = Matrix.empty_matrix(self.x, self.y)
+            for i in range(self.x):
+                for j in range(self.y):
+                    matR.__matrix__[i][j] = self.__matrix__[i][j] * y
+            return matR
+
 
 try:
     matA = Matrix(*map(int, input().split()))
-    matB = Matrix(*map(int, input().split()))
-    matC = matA + matB
+    # Addition
+    # matB = Matrix(*map(int, input().split()))
+    # matC = matA + matB
+    # Scalar Multiplication
+    scalar = int(input())
+    matC = matA * scalar
     print(matC)
 except (MatrixDimensionMismatch, ValueError, InsufficientInformation, EmptyMatrix, IllegalData):
     print('ERROR')
