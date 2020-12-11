@@ -71,6 +71,8 @@ class Matrix:
         return matR
 
     def minor(self, i, j):
+        if self.x == 1:
+            return self.__matrix__[self.x - i % self.x - 1][self.y - j % self.y - 1]
         matS = Matrix(self.x-1, self.y-1)
         for k in range(self.x):
             for l in range(self.y):
@@ -97,6 +99,14 @@ class Matrix:
         for j in range(self.y):
             det += self.cofactor(0, j) * self.__matrix__[0][j]
         return det
+
+    @property
+    def inverse(self):
+        matC = Matrix(self.x, self.y)
+        for i in range(matC.x):
+            for j in range(matC.y):
+                matC.__matrix__[i][j] = self.cofactor(i, j)
+        return matC.main_transpose * (1/self.determinant)
 
     def get_matrix(self):
         for i in range(self.x):
@@ -227,6 +237,16 @@ def matrix_determinant():
     print(matA.determinant)
     print()
 
+
+def matrix_inverse():
+    matA = Matrix(*map(int, input('Enter size of matrix: ').split()))
+    print('Enter matrix:')
+    matA.get_matrix()
+    print('The result is')
+    print(matA.inverse)
+    print()
+
+
 def matrix_transpose():
     # Default Transpose Type
     print()
@@ -276,6 +296,7 @@ options = {
     'Multiply matrices': matrix_multiplication,
     'Transpose matrix': matrix_transpose,
     'Calculate a determinant': matrix_determinant,
+    'Inverse matrix': matrix_inverse,
 }
 input_phrase = 'Your choice: '
 exit_phrase = 'Exit'
@@ -283,5 +304,5 @@ transpose_type = 'main'
 menu = Menu(input_phrase, exit_phrase, options)
 try:
     menu.loop()
-except (MatrixDimensionMismatch, ValueError, InsufficientInformation, EmptyMatrix, IllegalData):
+except (MatrixDimensionMismatch, ValueError, InsufficientInformation, EmptyMatrix, IllegalData, ZeroDivisionError):
     print('ERROR')
