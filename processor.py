@@ -18,6 +18,9 @@ class IllegalData(Exception):
     pass
 
 
+class ImpossibleDeterminant(Exception):
+    pass
+
 class Matrix:
     supported_data = [int, float]
 
@@ -66,6 +69,34 @@ class Matrix:
             for j in range(matR.y):
                 matR.__matrix__[i][j] = self.__matrix__[self.x-i-1][j]
         return matR
+
+    def minor(self, i, j):
+        matS = Matrix(self.x-1, self.y-1)
+        for k in range(self.x):
+            for l in range(self.y):
+                if k < i and l < j:
+                    matS.__matrix__[k][l] = self.__matrix__[k][l]
+                if k < i and l > j:
+                    matS.__matrix__[k][l-1] = self.__matrix__[k][l]
+                if k > i and l < j:
+                    matS.__matrix__[k-1][l] = self.__matrix__[k][l]
+                if k > i and l > j:
+                    matS.__matrix__[k-1][l-1] = self.__matrix__[k][l]
+        return matS.determinant
+
+    def cofactor(self, i, j):
+        return (-1) ** (i + j) * self.minor(i, j)
+
+    @property
+    def determinant(self):
+        if self.x != self.y:
+            raise ImpossibleDeterminant
+        if self.x == 1:
+            return self.__matrix__[0][0]
+        det = 0
+        for j in range(self.y):
+            det += self.cofactor(0, j) * self.__matrix__[0][j]
+        return det
 
     def get_matrix(self):
         for i in range(self.x):
@@ -188,6 +219,14 @@ def matrix_multiplication():
     print()
 
 
+def matrix_determinant():
+    matA = Matrix(*map(int, input('Enter size of matrix: ').split()))
+    print('Enter matrix:')
+    matA.get_matrix()
+    print('The result is')
+    print(matA.determinant)
+    print()
+
 def matrix_transpose():
     # Default Transpose Type
     print()
@@ -236,6 +275,7 @@ options = {
     'Multiply matrix by a constant': scalar_multiplication,
     'Multiply matrices': matrix_multiplication,
     'Transpose matrix': matrix_transpose,
+    'Calculate a determinant': matrix_determinant,
 }
 input_phrase = 'Your choice: '
 exit_phrase = 'Exit'
